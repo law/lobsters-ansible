@@ -1,0 +1,32 @@
+---
+- name: Install letsencrypt/certbot
+  package: 
+    name: certbot
+    state: present 
+
+- name: Create cert if not existing
+  command: |
+    certbot certonly 
+    --non-interactive 
+    -d {{ app_url | default('example.com') }}
+    --rsa-key-size 4096 
+    --standalone 
+    --server {{ letsencrypt_server | default('https://acme-staging-v02.api.letsencrypt.org/directory') }}
+    --agree-tos 
+    -m {{ certbot_email }} 
+  args: 
+    creates: /etc/letsencrypt/live/{{ rdns_name }}/
+
+- name: Configure LE renewal behavior
+  template: 
+    src: letsencrypt_cli.ini.j2
+    dest: /etc/letsencrypt/cli.ini
+    mode: 0644
+
+- name: Set up certbot cronjob
+  cron: 
+    name: certbot renew
+    user: root
+    minute: "0"
+    hour: "0,12"
+    job:  "python -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q"
