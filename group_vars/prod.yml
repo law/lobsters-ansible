@@ -2,3 +2,5 @@ db_host: web01
 mx_host: web01
 smtp_host: web01
 www_host: web01
+letsencrypt_endpoint: https://acme-v02.api.letsencrypt.org/directory
+app_url: lobste.rs

@@ -1,5 +1,7 @@
 - include_tasks: apt.yml
 
+- include_tasks: letsencrypt.yml
+
 - name: copy environment-agnostic nginx config files
   register: nginx_agnostic_config
   copy:
